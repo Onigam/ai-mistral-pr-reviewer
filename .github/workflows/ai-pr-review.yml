@@ -1,11 +1,11 @@
-name: OpenAI Reviewer
+name: AI PR Reviewer
 
 permissions:
   contents: read
   pull-requests: write
 
 on:
-  pull_request_target:
+  pull_request:
     types: [opened, synchronize, reopened]
   pull_request_review_comment:
     types: [created]
@@ -21,19 +21,13 @@ jobs:
   review:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-        with:
-          repository: ${{github.event.pull_request.head.repo.full_name}}
-          ref: ${{github.event.pull_request.head.ref}}
-          submodules: false
-      - uses: ./
+      - name: AI PR Reviewer
+        uses: Onigam/ai-mistral-pr-reviewer@v0.7
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
         with:
-          debug: true
-          review_comment_lgtm: false
-          openai_heavy_model: gpt-4
-          path_filters: |
-            !dist/**
-            !**/*.lock
+          debug: false
+          openai_base_url: 'https://api.mistral.ai/v1'
+          openai_light_model: 'mistral-small'
+          openai_heavy_model: 'mistral-small'
