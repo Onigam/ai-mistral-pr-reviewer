@@ -21,10 +21,17 @@ jobs:
   review:
     runs-on: ubuntu-latest
     steps:
+      - name: Generate installation token
+        id: generate-token
+        uses: tibdex/github-app-token@v1
+        with:
+          app_id: 800935
+          private_key: ${{ secrets.DARWIG_PRIVATE_KEY }}
+          installation_id: 46310774
       - name: AI PR Reviewer
         uses: Onigam/ai-mistral-pr-reviewer@v0.7
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.generate-token.outputs.token }}
           OPENAI_API_KEY: ${{ secrets.MISTRAL_API_KEY }}
         with:
           debug: false
